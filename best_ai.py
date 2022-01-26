@@ -1,5 +1,6 @@
 import pdb
 import random
+from venv import create
 import utils
 
 
@@ -39,6 +40,54 @@ for i in ourWordList:
 	for l in range(len(i)):
 		letters2Words[i[l]][l].append(i)
 
+
+
+#remove the words that do contain the given letter
+def removeWordsWithLetter(guessList, letter):
+	for i in guessList:
+		if letter in i:
+			#remove the word from the list
+			pass
+
+#remove the words that do not contain the given letter
+def removeWordsWithoutLetter(guessList, letter):
+	for i in guessList:
+		if(letter not in i):
+			#remove the word from the list
+			pass
+
+#initialize guess list based on correct letters
+def createGuessList(correctWord):
+	#if we know the correct position of a letter than get words that fit that
+	tmp = []
+	for i in range(5):
+		if(correctWord[i] != ""):
+			#we have a letter that is in the correct position
+			tmp.append(letters2Words[correctWord[i]][i])
+	return tmp
+
+#use possible letters to add to guessList
+def addMoreGuessList(guessList):
+	pass
+
+#set the positions list and dictionary
+def setPositions(feedback, guesses, correctWord, positions, lettersInWord, lettersNotInWord):
+	for i in range(len(feedback)):
+		guess = guesses[i]
+		feed = feedback[i]
+		for i in range(len(guess)):
+			if feed[i] == 0:
+				#wrong letter
+				lettersNotInWord.append(guess[i])
+			elif feed[i] == 1:
+				#right letter wrong position
+				lettersInWord[guess[i]] = 1
+				positions[guess[i]][i] = 0
+			else:
+				#correct position
+				lettersInWord[guess[i]] = 1
+				positions[guess[i]][i] = 2
+				correctWord[i] = guess[i]
 
 
 def makeguess(wordlist, guesses=[], feedback=[]):
@@ -100,38 +149,36 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 	}
 	
 	#set the possible positions and lettersNotInWord
-	for i in range(len(feedback)):
-		guess = guesses[i]
-		feed = feedback[i]
-		for i in range(len(guess)):
-			if feed[i] == 0:
-				#wrong letter
-				lettersNotInWord.append(guess[i])
-			elif feed[i] == 1:
-				#right letter wrong position
-				lettersInWord[guess[i]] = 1
-				positions[guess[i]][i] = 0
-			else:
-				#correct position
-				lettersInWord[guess[i]] = 1
-				positions[guess[i]][i] = 2
-				correctWord[i] = guess[i]
+	setPositions(feedback, guesses, correctWord, positions, lettersInWord, lettersNotInWord)
 	
 
-	#get a guess list
-	#if we know a letters position then find words that fit that
-	guessList = []
-	for i in range(5):
-		if(correctWord[i] != ""):
-			#we have a letter that is in the correct position
-			guessList.append(letters2Words[correctWord[i]][i])
+	#get an initial guess list using letters we know are correct
+	guessList = createGuessList(correctWord)
 
 
+	if(len(guessList) == 0):
+		#have no correct letters, try to get some more guesses
+		addMoreGuessList(guessList) #TODO: Complete this function 
 
 
+	#FILTER GUESSLIST as much as possible to REDUCE possible words to return
 
+	#remove words with letters not allowed
+	for j in lettersNotInWord:
+		removeWordsWithLetter(guessList, j)
 
+	#remove words that do not contain one of the correct letters
+	for j in correctWord:
+		if(j != ""):
+			removeWordsWithoutLetter(guessList, j)
+
+	#remove words where letters don't correspond with positions dictionary
 	
+
+
+
+
+
 
 
 
@@ -139,6 +186,7 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 
 
 
+	#return random.choice(guessList)
 	return random.choice(wordlist)
 
 
