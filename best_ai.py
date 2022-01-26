@@ -66,7 +66,7 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 		The word chosen by the AI for the next guess.
 	"""
 	if(len(guesses) == 0):
-		return "adieu"
+		return "ADIEU"
 
 
 	
