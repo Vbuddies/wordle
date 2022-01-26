@@ -3,6 +3,39 @@ import random
 import utils
 
 
+#make dictionary of letters that give a list of lists
+#for instance "e" -> [ [e is the first letter], [e is the second letter], [e is the third letter], [e is the fourth letter], [e is the fifth letter] ]
+letters2Words = {
+	"a": [[], [], [], [], []], 
+	"b": [[], [], [], [], []], 
+	"c": [[], [], [], [], []], 
+	"d": [[], [], [], [], []], 
+	"e": [[], [], [], [], []], 
+	"f": [[], [], [], [], []], 
+	"g": [[], [], [], [], []], 
+	"h": [[], [], [], [], []], 
+	"i": [[], [], [], [], []], 
+	"j": [[], [], [], [], []], 
+	"k": [[], [], [], [], []], 
+	"l": [[], [], [], [], []], 
+	"m": [[], [], [], [], []], 
+	"n": [[], [], [], [], []], 
+	"o":[[], [], [], [], []], 
+	"p": [[], [], [], [], []], 
+	"q": [[], [], [], [], []], 
+	"r": [[], [], [], [], []], 
+	"s": [[], [], [], [], []], 
+	"t": [[], [], [], [], []], 
+	"u": [[], [], [], [], []], 
+	"v": [[], [], [], [], []], 
+	"w": [[], [], [], [], []], 
+	"x": [[], [], [], [], []], 
+	"y": [[], [], [], [], []], 
+	"z": [[], [], [], [], []]
+}
+ourWordList = utils.readwords("allwords5.txt")
+
+
 def makeguess(wordlist, guesses=[], feedback=[]):
 	"""Guess a word from the available wordlist, (optionally) using feedback 
 	from previous guesses.
@@ -30,6 +63,8 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 	if(len(guesses) == 0):
 		return "adieu"
 
+
+	
 
 
 
