@@ -67,12 +67,75 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 	"""
 	if(len(guesses) == 0):
 		return "ADIEU"
+	
+	correctWord=["", "", "", "", ""]
+	lettersNotInWord = []
+	lettersInWord = {}
+	positions = {
+		"A": [1, 1, 1, 1, 1],
+		"B": [1, 1, 1, 1, 1],
+		"C": [1, 1, 1, 1, 1],
+		"D": [1, 1, 1, 1, 1],
+		"E": [1, 1, 1, 1, 1],
+		"F": [1, 1, 1, 1, 1],
+		"G": [1, 1, 1, 1, 1],
+		"H": [1, 1, 1, 1, 1],
+		"I": [1, 1, 1, 1, 1],
+		"J": [1, 1, 1, 1, 1],
+		"K": [1, 1, 1, 1, 1],
+		"L": [1, 1, 1, 1, 1],
+		"M": [1, 1, 1, 1, 1],
+		"N": [1, 1, 1, 1, 1],
+		"O": [1, 1, 1, 1, 1],
+		"P": [1, 1, 1, 1, 1],
+		"Q": [1, 1, 1, 1, 1],
+		"R": [1, 1, 1, 1, 1],
+		"S": [1, 1, 1, 1, 1],
+		"T": [1, 1, 1, 1, 1],
+		"U": [1, 1, 1, 1, 1],
+		"W": [1, 1, 1, 1, 1],
+		"X": [1, 1, 1, 1, 1],
+		"Y": [1, 1, 1, 1, 1],
+		"Z": [1, 1, 1, 1, 1]
+	}
+	
+	#set the possible positions and lettersNotInWord
+	for i in range(len(feedback)):
+		guess = guesses[i]
+		feed = feedback[i]
+		for i in range(len(guess)):
+			if feed[i] == 0:
+				#wrong letter
+				lettersNotInWord.append(guess[i])
+			elif feed[i] == 1:
+				#right letter wrong position
+				lettersInWord[guess[i]] = 1
+				positions[guess[i]][i] = 0
+			else:
+				#correct position
+				lettersInWord[guess[i]] = 1
+				positions[guess[i]][i] = 2
+				correctWord[i] = guess[i]
+	
+
+	#get a guess list
+	#if we know a letters position then find words that fit that
+	guessList = []
+	for i in range(5):
+		if(correctWord[i] != ""):
+			#we have a letter that is in the correct position
+			guessList.append(letters2Words[correctWord[i]][i])
+
+
+
+
 
 
 	
 
 
 
+	#choose a word from the list of possible words
 
 
 
