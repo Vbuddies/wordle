@@ -195,7 +195,7 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 			removeWordsWithoutLetter(guessList, j)
 
 	#remove words where letters don't correspond with positions dictionary
-	removeWrongPositionWords(guessList)
+	removeWrongPositionWords(guessList) #TODO: Complete this function
 
 
 
