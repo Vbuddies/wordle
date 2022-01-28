@@ -47,23 +47,41 @@ def removeWordsWithLetter(guessList, letter):
 	for i in guessList:
 		if letter in i:
 			#remove the word from the list
-			pass
+			guessList.pop(i)
 
 #remove the words that do not contain the given letter
 def removeWordsWithoutLetter(guessList, letter):
 	for i in guessList:
 		if(letter not in i):
 			#remove the word from the list
-			pass
+			guessList.pop(i)
 
 #initialize guess list based on correct letters
 def createGuessList(correctWord):
-	#if we know the correct position of a letter than get words that fit that
+	#GET possible words for each correct letter
 	tmp = []
-	for i in range(5):
-		if(correctWord[i] != ""):
-			#we have a letter that is in the correct position
-			tmp.append(letters2Words[correctWord[i]][i])
+	tmp1 = []
+	tmp2 = []
+	tmp3 = []
+	tmp4 = []
+	tmp5 = []
+	if(correctWord[0] != ""):
+		tmp1.append(letters2Words[correctWord[0]][0])
+	if(correctWord[1] != ""):
+		tmp2.append(letters2Words[correctWord[1]][1])
+	if(correctWord[2] != ""):
+		tmp3.append(letters2Words[correctWord[2]][2])
+	if(correctWord[3] != ""):
+		tmp4.append(letters2Words[correctWord[3]][3])
+	if(correctWord[4] != ""):
+		tmp5.append(letters2Words[correctWord[4]][4])
+	
+	#intersect the lists to get only the common words to ensure no words that do not fit
+	tmp = list(set(tmp1).intersection(set(tmp2)))
+	tmp = list(set(tmp).intersection(set(tmp3)))
+	tmp = list(set(tmp).intersection(set(tmp4)))
+	tmp = list(set(tmp).intersection(set(tmp5)))
+
 	return tmp
 
 #use possible letters to add to guessList
@@ -88,6 +106,10 @@ def setPositions(feedback, guesses, correctWord, positions, lettersInWord, lette
 				lettersInWord[guess[i]] = 1
 				positions[guess[i]][i] = 2
 				correctWord[i] = guess[i]
+
+#method to remove any words that have letters that are in the word but wrong position
+def removeWrongPositionWords():
+	pass
 
 
 def makeguess(wordlist, guesses=[], feedback=[]):
@@ -173,7 +195,7 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 			removeWordsWithoutLetter(guessList, j)
 
 	#remove words where letters don't correspond with positions dictionary
-	
+	removeWrongPositionWords(guessList)
 
 
 
@@ -183,6 +205,7 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 
 
 	#choose a word from the list of possible words
+	#go with random or a better method of picking a word
 
 
 
