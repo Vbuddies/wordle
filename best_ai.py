@@ -108,13 +108,18 @@ def setPositions(feedback, guesses, correctWord, positions, lettersInWord, lette
 			if feed[i] == 0:
 				#wrong letter
 				#need to check if the letter appears twice, if it does then i can't directly do this, otherwise I can
-				
-				lettersNotInWord.append(guess[i])
-				positions[guess[i]][0] = 0
-				positions[guess[i]][1] = 0
-				positions[guess[i]][2] = 0
-				positions[guess[i]][3] = 0
-				positions[guess[i]][4] = 0
+				flag = True
+				for j in range(len(guess)):
+					if j != i and guess[j] == guess[i]:
+						positions[guess[i]][i] = 0
+						flag = False
+				if(flag):
+					lettersNotInWord.append(guess[i])
+					positions[guess[i]][0] = 0
+					positions[guess[i]][1] = 0
+					positions[guess[i]][2] = 0
+					positions[guess[i]][3] = 0
+					positions[guess[i]][4] = 0
 			elif feed[i] == 1:
 				#right letter wrong position
 				lettersInWord[guess[i]] = 1
