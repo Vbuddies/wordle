@@ -107,7 +107,8 @@ def setPositions(feedback, guesses, correctWord, positions, lettersInWord, lette
 		for i in range(len(guess)):
 			if feed[i] == 0:
 				#wrong letter
-				#need to check if the letter appears twice, if it does then i can't directly do this, otherwise i can
+				#need to check if the letter appears twice, if it does then i can't directly do this, otherwise I can
+				
 				lettersNotInWord.append(guess[i])
 				positions[guess[i]][0] = 0
 				positions[guess[i]][1] = 0
@@ -213,26 +214,17 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 		guessList = wordlist 
 
 
+	#if a letter is in both the correct words and lettersNotInWord remove the letter from lettersNotInWord
+	for i in correctWord:
+		if(i in lettersNotInWord):
+			lettersNotInWord.remove(i)
 
 	#FILTER GUESSLIST as much as possible to REDUCE possible words to return
 
-	#remove words with letters not allowed
-	#TODO: bug here when there is a double letter and the letter appears once in the word
-	#if you find the letter and use the letter somewhere else it shows as false and adds the letter to notInWord list which removes
-	#all words with said letter
-	#EXAMPLE CHAFE, if you guess LEARE the last E is green and the first E is grey which adds E to NotInWord list, and then we no longer have the word
-	#basically words with double letters suck, and cause lots of issues
-	print("guessList before filtering")
-	print(guessList)
-	print("Happens here")
-	print(lettersNotInWord)
 	for j in lettersNotInWord:
-		print("j: " + j)
-		print(guessList)
 		guessList = removeWordsWithLetter(guessList, j)
-		print(guessList)
-	print("guessList after removing the words with a letter")
-	print(guessList)
+
+	
 
 	#remove words that do not contain letters that are in the word(specifically the letters that we know are in the word but not what position)
 	for j in lettersInWord:
