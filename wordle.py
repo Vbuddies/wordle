@@ -61,7 +61,6 @@ def main(args):
         outcome = play(secret, wordlist)
     else:  # ai player
         secret = random.choice(secretwordlist)  # random selection of the secret word
-        secret = "CHAFE"
         outcome = watch(secret, wordlist, ai, delay)
 
     # Update statistics file
