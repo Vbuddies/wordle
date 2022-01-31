@@ -222,6 +222,9 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 	#choose a word from the list of possible words
 	#go with random or a better method of picking a word
 
+	#perhaps if this is the second pick find a word with lots of consonants and few vowels that still has all the correct letters from the first guess
+	#should only do this for limited information, i.e. on the second guess
+
 
 
 	#return random.choice(guessList)
