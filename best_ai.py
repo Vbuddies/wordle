@@ -216,8 +216,22 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 	#FILTER GUESSLIST as much as possible to REDUCE possible words to return
 
 	#remove words with letters not allowed
+	#TODO: bug here when there is a double letter and the letter appears once in the word
+	#if you find the letter and use the letter somewhere else it shows as false and adds the letter to notInWord list which removes
+	#all words with said letter
+	#EXAMPLE CHAFE, if you guess LEARE the last E is green and the first E is grey which adds E to NotInWord list, and then we no longer have the word
+	#basically words with double letters suck, and cause lots of issues
+	print("guessList before filtering")
+	print(guessList)
+	print("Happens here")
+	print(lettersNotInWord)
 	for j in lettersNotInWord:
+		print("j: " + j)
+		print(guessList)
 		guessList = removeWordsWithLetter(guessList, j)
+		print(guessList)
+	print("guessList after removing the words with a letter")
+	print(guessList)
 
 	#remove words that do not contain letters that are in the word(specifically the letters that we know are in the word but not what position)
 	for j in lettersInWord:
@@ -239,12 +253,14 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 	#should only do this for limited information, i.e. on the second guess
 
 	#added these lines for debugging
-	print(guessList)
+	# print(guessList)
 	input("Continue")
 
 	#TODO: for a simple AI we could just choose a random choice like the following, but we should probably make this smarter
 
 	print("Returning random choice from guessList")
+	if(len(guessList) == 0):
+		return input("guessList Empty Select Value to pass: ")
 	return random.choice(guessList)
 
 
