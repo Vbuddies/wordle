@@ -77,20 +77,35 @@ def createGuessList(correctWord):
 		tmp5.append(letters2Words[correctWord[4]][4])
 	
 	#intersect the lists to get only the common words to ensure no words that do not fit
-	tmp = list(set(tmp1).intersection(set(tmp2)))
-	tmp = list(set(tmp).intersection(set(tmp3)))
-	tmp = list(set(tmp).intersection(set(tmp4)))
-	tmp = list(set(tmp).intersection(set(tmp5)))
+	if tmp1 != []:
+		tmp = list(set(tmp1).intersection(set(tmp2)))
+		tmp = list(set(tmp).intersection(set(tmp3)))
+		tmp = list(set(tmp).intersection(set(tmp4)))
+		tmp = list(set(tmp).intersection(set(tmp5)))
+	elif tmp2 != []:
+		tmp = tmp2
+		tmp = list(set(tmp).intersection(set(tmp3)))
+		tmp = list(set(tmp).intersection(set(tmp4)))
+		tmp = list(set(tmp).intersection(set(tmp5)))
+	elif tmp3 != []:
+		tmp = tmp3
+		tmp = list(set(tmp).intersection(set(tmp4)))
+		tmp = list(set(tmp).intersection(set(tmp5)))
+	elif tmp4 != []:
+		tmp = tmp4
+		tmp = list(set(tmp).intersection(set(tmp5)))
+	else:
+		tmp = tmp5
 
 	return tmp
 
 #use possible letters to add to guessList
-def addMoreGuessList(guessList):
+def addMoreGuessList(guessList, positions):
 	#could loop through words list and whichever word has the most matching letters we add to the guessList
 	#for example if we know where 2 letters are and know that 1 other letter is somewhere in the word
 	#from the possible words, the 'score' for a good guess would be a 5, the word has the 2 matching letters and includes the letter we know is in the word
 	#only add words to the guess list that have the same 'score' or criteria we know
-	pass
+	return []
 
 
 #set the positions list and dictionary
@@ -120,7 +135,7 @@ def removeWrongPositionWords(guessList, positions):
 		word = guessList[i]
 		#loop through word and see if it has a letter in word, but in wrong position
 		for l in range(len(word)):
-			if(positions[word[l]][l] == 1):
+			if(positions[word[l]][l] == 0):
 				guessList.remove(i)
 				continue
 
@@ -194,8 +209,9 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 
 	if(len(guessList) == 0):
 		#have no correct letters, try to get some more guesses
-		addMoreGuessList(guessList) 
+		guessList = addMoreGuessList(guessList, positions)
 		#TODO: Complete this function 
+
 
 
 	#FILTER GUESSLIST as much as possible to REDUCE possible words to return
@@ -228,7 +244,8 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 
 
 	#return random.choice(guessList)
-	return random.choice(wordlist)
+	print(guessList)
+	return random.choice(guessList)
 
 
 if __name__ == "__main__":
