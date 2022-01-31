@@ -21,7 +21,7 @@ letters2Words = {
 	"L": [[], [], [], [], []], 
 	"M": [[], [], [], [], []], 
 	"N": [[], [], [], [], []], 
-	"O":[[], [], [], [], []], 
+	"O": [[], [], [], [], []], 
 	"P": [[], [], [], [], []], 
 	"Q": [[], [], [], [], []], 
 	"R": [[], [], [], [], []], 
@@ -86,7 +86,12 @@ def createGuessList(correctWord):
 
 #use possible letters to add to guessList
 def addMoreGuessList(guessList):
+	#could loop through words list and whichever word has the most matching letters we add to the guessList
+	#for example if we know where 2 letters are and know that 1 other letter is somewhere in the word
+	#from the possible words, the 'score' for a good guess would be a 5, the word has the 2 matching letters and includes the letter we know is in the word
+	#only add words to the guess list that have the same 'score' or criteria we know
 	pass
+
 
 #set the positions list and dictionary
 def setPositions(feedback, guesses, correctWord, positions, lettersInWord, lettersNotInWord):
@@ -107,9 +112,18 @@ def setPositions(feedback, guesses, correctWord, positions, lettersInWord, lette
 				positions[guess[i]][i] = 2
 				correctWord[i] = guess[i]
 
+
 #method to remove any words that have letters that are in the word but wrong position
-def removeWrongPositionWords():
-	pass
+def removeWrongPositionWords(guessList, positions):
+	#loop through guess list
+	for i in range(len(guessList)):
+		word = guessList[i]
+		#loop through word and see if it has a letter in word, but in wrong position
+		for l in range(len(word)):
+			if(positions[word[l]][l] == 1):
+				guessList.remove(i)
+				continue
+
 
 
 def makeguess(wordlist, guesses=[], feedback=[]):
@@ -180,7 +194,8 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 
 	if(len(guessList) == 0):
 		#have no correct letters, try to get some more guesses
-		addMoreGuessList(guessList) #TODO: Complete this function 
+		addMoreGuessList(guessList) 
+		#TODO: Complete this function 
 
 
 	#FILTER GUESSLIST as much as possible to REDUCE possible words to return
@@ -195,7 +210,7 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 			removeWordsWithoutLetter(guessList, j)
 
 	#remove words where letters don't correspond with positions dictionary
-	removeWrongPositionWords(guessList)
+	removeWrongPositionWords(guessList, positions)
 
 
 
@@ -216,3 +231,4 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 if __name__ == "__main__":
 	wordlist = utils.readwords("allwords5.txt")
 	print(f"AI: 'My next choice would be {makeguess(wordlist)}'")
+
