@@ -2,6 +2,7 @@ import pdb
 import random
 from venv import create
 import utils
+import time
 
 
 #make dictionary of letters that give a list of lists
@@ -44,59 +45,57 @@ for i in ourWordList:
 
 #remove the words that do contain the given letter
 def removeWordsWithLetter(guessList, letter):
+	tmp = []
 	for i in guessList:
 		if letter in i:
-			#remove the word from the list
-			guessList.pop(i)
+			# add word to list to remove after
+			tmp.append(i)
+	#convert the 2 to sets and do a set subtraction
+	r = set(guessList) - set(tmp)
+	return list(r)
+
 
 #remove the words that do not contain the given letter
 def removeWordsWithoutLetter(guessList, letter):
+	tmp = []
 	for i in guessList:
-		if(letter not in i):
-			#remove the word from the list
-			guessList.pop(i)
+		if letter not in i:
+			# add word to list to remove after
+			tmp.append(i)
+	#convert the 2 to sets and do a set subtraction
+	return list(set(guessList) - set(tmp))
 
 #initialize guess list based on correct letters
 def createGuessList(correctWord):
 	#GET possible words for each correct letter
 	tmp = []
-	tmp1 = []
-	tmp2 = []
-	tmp3 = []
-	tmp4 = []
-	tmp5 = []
 	if(correctWord[0] != ""):
-		tmp1.append(letters2Words[correctWord[0]][0])
+		#just add to the list
+		tmp = letters2Words[correctWord[0]][0]
 	if(correctWord[1] != ""):
-		tmp2.append(letters2Words[correctWord[1]][1])
+		if(tmp == []):
+			tmp = letters2Words[correctWord[1]][1]
+		else:
+			#intersect the lists
+			tmp = list(set(tmp).intersection(letters2Words[correctWord[1]][1]))
 	if(correctWord[2] != ""):
-		tmp3.append(letters2Words[correctWord[2]][2])
+		if tmp == []:
+			tmp = letters2Words[correctWord[2]][2]
+		else:
+			#intersect the lists
+			tmp = list(set(tmp).intersection(letters2Words[correctWord[2]][2]))
 	if(correctWord[3] != ""):
-		tmp4.append(letters2Words[correctWord[3]][3])
+		if tmp == []:
+			tmp = letters2Words[correctWord[3]][3]
+		else:
+			#intersect the lists
+			tmp = list(set(tmp).intersection(letters2Words[correctWord[3]][3]))
 	if(correctWord[4] != ""):
-		tmp5.append(letters2Words[correctWord[4]][4])
-	
-	#intersect the lists to get only the common words to ensure no words that do not fit
-	if tmp1 != []:
-		tmp = list(set(tmp1).intersection(set(tmp2)))
-		tmp = list(set(tmp).intersection(set(tmp3)))
-		tmp = list(set(tmp).intersection(set(tmp4)))
-		tmp = list(set(tmp).intersection(set(tmp5)))
-	elif tmp2 != []:
-		tmp = tmp2
-		tmp = list(set(tmp).intersection(set(tmp3)))
-		tmp = list(set(tmp).intersection(set(tmp4)))
-		tmp = list(set(tmp).intersection(set(tmp5)))
-	elif tmp3 != []:
-		tmp = tmp3
-		tmp = list(set(tmp).intersection(set(tmp4)))
-		tmp = list(set(tmp).intersection(set(tmp5)))
-	elif tmp4 != []:
-		tmp = tmp4
-		tmp = list(set(tmp).intersection(set(tmp5)))
-	else:
-		tmp = tmp5
-
+		if tmp == []:
+			tmp= letters2Words[correctWord[4]][4]
+		else:
+			#intersect the lists
+			tmp = list(set(tmp).intersection(letters2Words[correctWord[4]][4]))
 	return tmp
 
 #use possible letters to add to guessList
@@ -117,6 +116,11 @@ def setPositions(feedback, guesses, correctWord, positions, lettersInWord, lette
 			if feed[i] == 0:
 				#wrong letter
 				lettersNotInWord.append(guess[i])
+				positions[guess[i]][0] = 0
+				positions[guess[i]][1] = 0
+				positions[guess[i]][2] = 0
+				positions[guess[i]][3] = 0
+				positions[guess[i]][4] = 0
 			elif feed[i] == 1:
 				#right letter wrong position
 				lettersInWord[guess[i]] = 1
@@ -131,13 +135,16 @@ def setPositions(feedback, guesses, correctWord, positions, lettersInWord, lette
 #method to remove any words that have letters that are in the word but wrong position
 def removeWrongPositionWords(guessList, positions):
 	#loop through guess list
+	tmp = []
 	for i in range(len(guessList)):
 		word = guessList[i]
 		#loop through word and see if it has a letter in word, but in wrong position
 		for l in range(len(word)):
 			if(positions[word[l]][l] == 0):
-				guessList.remove(i)
+				tmp.append(guessList[i])
 				continue
+
+	return list(set(guessList) - set(tmp))
 
 
 
@@ -193,6 +200,7 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 		"S": [1, 1, 1, 1, 1],
 		"T": [1, 1, 1, 1, 1],
 		"U": [1, 1, 1, 1, 1],
+		"V": [1, 1, 1, 1, 1],
 		"W": [1, 1, 1, 1, 1],
 		"X": [1, 1, 1, 1, 1],
 		"Y": [1, 1, 1, 1, 1],
@@ -218,17 +226,15 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 
 	#remove words with letters not allowed
 	for j in lettersNotInWord:
-		removeWordsWithLetter(guessList, j)
+		guessList = removeWordsWithLetter(guessList, j)
 
-	#remove words that do not contain one of the correct letters
-	for j in correctWord:
+	#remove words that do not contain letters that are in the word(specifically the letters that we know are in the word but not what position)
+	for j in lettersInWord:
 		if(j != ""):
-			removeWordsWithoutLetter(guessList, j)
+			guessList = removeWordsWithoutLetter(guessList, j)
 
 	#remove words where letters don't correspond with positions dictionary
-	removeWrongPositionWords(guessList, positions)
-
-
+	guessList = removeWrongPositionWords(guessList, positions)
 
 
 
@@ -241,10 +247,13 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 	#perhaps if this is the second pick find a word with lots of consonants and few vowels that still has all the correct letters from the first guess
 	#should only do this for limited information, i.e. on the second guess
 
-
-
-	#return random.choice(guessList)
+	#added these lines for debugging
 	print(guessList)
+	input("Continue")
+
+	#TODO: for a simple AI we could just choose a random choice like the following, but we should probably make this smarter
+
+	print("Returning random choice from guessList")
 	return random.choice(guessList)
 
 
