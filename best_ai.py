@@ -98,14 +98,6 @@ def createGuessList(correctWord):
 			tmp = list(set(tmp).intersection(letters2Words[correctWord[4]][4]))
 	return tmp
 
-#use possible letters to add to guessList
-def addMoreGuessList(guessList, positions):
-	#could loop through words list and whichever word has the most matching letters we add to the guessList
-	#for example if we know where 2 letters are and know that 1 other letter is somewhere in the word
-	#from the possible words, the 'score' for a good guess would be a 5, the word has the 2 matching letters and includes the letter we know is in the word
-	#only add words to the guess list that have the same 'score' or criteria we know
-	return []
-
 
 #set the positions list and dictionary
 def setPositions(feedback, guesses, correctWord, positions, lettersInWord, lettersNotInWord):
@@ -216,9 +208,8 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 
 
 	if(len(guessList) == 0):
-		#have no correct letters, try to get some more guesses
-		guessList = addMoreGuessList(guessList, positions)
-		#TODO: Complete this function 
+		#have no correct letters, so just add all words and the filters will remove the letters we know don't work
+		guessList = wordlist 
 
 
 
