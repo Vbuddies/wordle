@@ -219,6 +219,11 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 		if(i in lettersNotInWord):
 			lettersNotInWord.remove(i)
 
+	#repeat above except for the lettersInWord Set
+	for i in lettersInWord:
+		if(i in lettersNotInWord):
+			lettersNotInWord.remove(i)
+
 	#FILTER GUESSLIST as much as possible to REDUCE possible words to return
 
 	for j in lettersNotInWord:
@@ -246,12 +251,11 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 	#should only do this for limited information, i.e. on the second guess
 
 	#added these lines for debugging
-	# print(guessList)
-	input("Continue")
+	# input("Continue")
 
 	#TODO: for a simple AI we could just choose a random choice like the following, but we should probably make this smarter
 
-	print("Returning random choice from guessList")
+	# print("Returning random choice from guessList")
 	if(len(guessList) == 0):
 		return input("guessList Empty Select Value to pass: ")
 	return random.choice(guessList)
