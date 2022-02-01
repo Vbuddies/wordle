@@ -259,6 +259,18 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 	# input("Continue")
 
 	#TODO: for a simple AI we could just choose a random choice like the following, but we should probably make this smarter
+	
+
+	#if we are only missing one letter and have plenty of options and at least 2 guesses left
+	#find a word that uses all or all-1 of the possible letters and use that so the next guess has much more information
+	if(len(guesses) <= 4):
+		if(correctWord.count("") == 1):
+			#only have 1 letter unsolved
+			#find which position it is
+			#then grab that position's letter for each possible guess
+			#make a word using those letters
+			#return that letter 
+			pass
 
 	# print("Returning random choice from guessList")
 	if(len(guessList) == 0):
