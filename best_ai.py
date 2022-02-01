@@ -148,18 +148,7 @@ def removeWrongPositionWords(guessList, positions):
 
 def makeWord(wordlist, possibleLetters):
 	print(possibleLetters)
-	for i in wordlist:
-		count = 0
-		#get count of each unique letter
-		for j in possibleLetters:
-			#using sets ensures we don't have a word with dual of the same letter
-			if j in set(i):
-				count +=1
-		if(count == len(possibleLetters)):
-			#return this word
-			input("Continue")
-			return i
-	#instead of returning blank here I can recurse for each permutation
+	
 	return ""
 
 #use this method with above
