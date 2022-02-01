@@ -146,6 +146,27 @@ def removeWrongPositionWords(guessList, positions):
 	return list(set(guessList) - set(tmp))
 
 
+def makeWord(wordlist, possibleLetters):
+	print(possibleLetters)
+	for i in wordlist:
+		count = 0
+		#get count of each unique letter
+		for j in possibleLetters:
+			#using sets ensures we don't have a word with dual of the same letter
+			if j in set(i):
+				count +=1
+		if(count == len(possibleLetters)):
+			#return this word
+			input("Continue")
+			return i
+	#instead of returning blank here I can recurse for each permutation
+	return ""
+
+#use this method with above
+def countOccurenceLetters(word, possibleLetters):
+	return len(set(word).intersection(set(possibleLetters)))
+
+
 
 def makeguess(wordlist, guesses=[], feedback=[]):
 	"""Guess a word from the available wordlist, (optionally) using feedback 
@@ -263,14 +284,26 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 
 	#if we are only missing one letter and have plenty of options and at least 2 guesses left
 	#find a word that uses all or all-1 of the possible letters and use that so the next guess has much more information
-	if(len(guesses) <= 4):
+	if(len(guesses) <= 4 and len(guessList) > 2):
 		if(correctWord.count("") == 1):
+			print(guessList)
 			#only have 1 letter unsolved
 			#find which position it is
-			#then grab that position's letter for each possible guess
+			idx = 0
+			for i in range(5):
+				if(correctWord[i] == ""):
+					idx = i
+					break
+			possibleLetters = []
+			#loop through guessList grabbing all the letters
+			for i in guessList:
+				possibleLetters.append(i[idx])
 			#make a word using those letters
-			#return that letter 
-			pass
+			word = makeWord(wordlist, possibleLetters)
+			print(word)
+			if word != "":
+				return word
+			
 
 	# print("Returning random choice from guessList")
 	if(len(guessList) == 0):
