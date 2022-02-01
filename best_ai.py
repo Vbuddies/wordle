@@ -172,7 +172,8 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 		The word chosen by the AI for the next guess.
 	"""
 	if(len(guesses) == 0):
-		return "ADIEU"
+		return random.choice(["REAIS", "SLATE", "AEGIS", "LARES", "RALES", "TARES", "NARES", "ARLES", "SIREN", "RAISE", "QUERY", "RENTS", "SNARE", "EARNS", "STOAE", "SANER", "CANOE", "TEARS", "STEAM", "ADIEU"])
+		# return "ADIEU"
 	
 	correctWord=["", "", "", "", ""]
 	lettersNotInWord = []
