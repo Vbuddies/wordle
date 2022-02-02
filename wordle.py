@@ -58,16 +58,15 @@ def main(args):
 
     # Play the game
     if ai is None:  # human player
-    	#secret = random.choice(secretwordlist)  # random selection of the secret word
-    	outcome = play(secret, wordlist)
+        secret = random.choice(secretwordlist)  # random selection of the secret word
+        outcome = play(secret, wordlist)
             
         # Update statistics file
-    	if outcome != -1 and args.practice:  # only update if user didn't quit
+        if outcome != -1 and args.practice:  # only update if user didn't quit
             utils.updatestats(outcome)
     else:  # ai player
         for i in range(args.n):
             secret = random.choice(secretwordlist)  # random selection of the secret word
-            # secret = "PIGHT"
             outcome = watch(secret, wordlist, ai, delay)
 
             # Update statistics file
