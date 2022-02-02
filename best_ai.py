@@ -148,15 +148,16 @@ def removeWrongPositionWords(guessList, positions):
 
 #method to help us find the last letter when all others are known and our number of guesses
 # is <= 4
-def findLastLetter(wordList, lettersInWord, lettersNotInWord):
-	allLetters = list(string.ascii_uppercase)
+def findLastLetter(guessList, index, lettersInWord):
+	letters = []
+	wordList = utils.readwords("allwords5.txt")
+	#add to letters list the possible letters from that position in guess list and of letters in word
+	for i in range(len(guessList)):
+		if(guessList[i][index] not in letters):
+			letters.append(guessList[i][index])
 
-	# make a list of all letters that are neither in the letters we know are in the word
-	# nor in the letters we don't know are in the word
-	unkownLetters = []
-	for i in range(len(allLetters)):
-		if(allLetters[i] not in lettersInWord and allLetters[i] not in lettersNotInWord):
-			unkownLetters.append(allLetters[i])
+	#add the letters we know are in the word to the list
+	letters += lettersInWord.keys()
 
 
 	# loop through words list
@@ -168,7 +169,7 @@ def findLastLetter(wordList, lettersInWord, lettersNotInWord):
 
 		#count the number of unknown letters in each word
 		for j in range(len(word)):
-			if(word[j] in unkownLetters):
+			if(word[j] in letters):
 				current += 1
 
 		#if its a new max add it to a list
@@ -196,6 +197,7 @@ def findLastLetter(wordList, lettersInWord, lettersNotInWord):
 		if(tmp[i] != ""):
 			result.append(tmp[i])
 		
+	
 
 	#return a random one of these guesses
 	return result[random.randint(0, len(result)-1)]
@@ -320,21 +322,16 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 	if(len(guesses) <= 4):
 		#if there is only 1 letter we don't know
 		if(correctWord.count("") == 1):
-			print(guessList)
-			#only have 1 letter unsolved
-			#find which position it is
-			idx = 0
-			for i in range(5):
+			#print(guessList)
+			index = 0
+			for i in range(len(correctWord)):
 				if(correctWord[i] == ""):
-					idx = i
-					break
-			possibleLetters = []
-			#loop through guessList grabbing all the letters
-			for i in guessList:
-				possibleLetters.append(i[idx])
-			#make a word using those letters
-			#return that letter 
-			return findLastLetter(guessList, lettersInWord, lettersNotInWord)
+					index = i
+			
+			g = findLastLetter(guessList, index, lettersInWord)
+			print("guess should be" , g)
+			return g
+			#print(findLastLetter(utils.readwords("allwords5.txt"), lettersInWord, lettersNotInWord))
 
 	# print("Returning random choice from guessList")
 	if(len(guessList) == 0):
