@@ -148,7 +148,7 @@ def removeWrongPositionWords(guessList, positions):
 
 #method to help us find the last letter when all others are known and our number of guesses
 # is <= 4
-def findLastLetter(guessList, index, lettersInWord):
+def findLastLetter(guessList, index, lettersInWord, correctWord):
 	letters = []
 	wordList = utils.readwords("allwords5.txt")
 	#add to letters list the possible letters from that position in guess list and of letters in word
@@ -156,11 +156,13 @@ def findLastLetter(guessList, index, lettersInWord):
 		if(guessList[i][index] not in letters):
 			letters.append(guessList[i][index])
 
-	#add the letters we know are in the word to the list
-	letters += lettersInWord.keys()
+	#to remove duplicates
+	letters = list(set(letters))
 
-	print(unkownLetters)
-	input("Continue")
+	#if one of the possible letters is already in the correct word list then remove that letter
+	for i in letters:
+		if(i in correctWord):
+			letters.remove(i)
 	# loop through words list
 	max = 0
 	tmp = []
@@ -182,7 +184,6 @@ def findLastLetter(guessList, index, lettersInWord):
 			else:
 				max = current
 				tmp.append(word)
-
 	#remove words that have duplicate letters
 	for i in range(0,len(tmp)):
 		word = tmp[i]
@@ -199,7 +200,6 @@ def findLastLetter(guessList, index, lettersInWord):
 			result.append(tmp[i])
 		
 	
-
 	#return a random one of these guesses
 	if(len(result) == 0):
 		return ""
@@ -326,17 +326,16 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 	#find a word that uses all or all-1 of the possible letters and use that so the next guess has much more information
 	if(len(guesses) <= 4):
 		#if there is only 1 letter we don't know
-		if(correctWord.count("") == 1):
+		if(correctWord.count("") == 1 and len(guessList) > 2):
 			#print(guessList)
 			index = 0
 			for i in range(len(correctWord)):
 				if(correctWord[i] == ""):
 					index = i
 			
-			g = findLastLetter(guessList, index, lettersInWord)
+			g = findLastLetter(guessList, index, lettersInWord, correctWord)
 			print("guess should be" , g)
 			return g
-			#print(findLastLetter(utils.readwords("allwords5.txt"), lettersInWord, lettersNotInWord))
 
 	# print("Returning random choice from guessList")
 	if(len(guessList) == 0):
