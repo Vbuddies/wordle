@@ -3,7 +3,7 @@ import random
 from venv import create
 import utils
 import time
-
+import string
 
 #make dictionary of letters that give a list of lists
 #for instance "e" -> [ [e is the first letter], [e is the second letter], [e is the third letter], [e is the fourth letter], [e is the fifth letter] ]
@@ -146,15 +146,59 @@ def removeWrongPositionWords(guessList, positions):
 	return list(set(guessList) - set(tmp))
 
 
-def makeWord(wordlist, possibleLetters):
-	print(possibleLetters)
+#method to help us find the last letter when all others are known and our number of guesses
+# is <= 4
+def findLastLetter(wordList, lettersInWord, lettersNotInWord):
+	allLetters = list(string.ascii_uppercase)
+
+	# make a list of all letters that are neither in the letters we know are in the word
+	# nor in the letters we don't know are in the word
+	unkownLetters = []
+	for i in range(len(allLetters)):
+		if(allLetters[i] not in lettersInWord and allLetters[i] not in lettersNotInWord):
+			unkownLetters.append(allLetters[i])
+
+
+	# loop through words list
+	max = 0
+	tmp = []
+	for i in range(len(wordList)):
+		current = 0
+		word = wordList[i]
+
+		#count the number of unknown letters in each word
+		for j in range(len(word)):
+			if(word[j] in unkownLetters):
+				current += 1
+
+		#if its a new max add it to a list
+		if(current >= max):
+			if(current > max):
+				tmp = []
+				tmp.append(word)
+				max = current
+			else:
+				max = current
+				tmp.append(word)
+
+	#remove words that have duplicate letters
+	for i in range(0,len(tmp)):
+		word = tmp[i]
+		#set the index of that word to be an empty string
+		for j in range(len(word)):
+			if(word.count(word[j]) > 1):
+				tmp[i] = ""
+				break
 	
-	return ""
+	#add all words with all unique letters to result list
+	result = []
+	for i in range(len(tmp)):
+		if(tmp[i] != ""):
+			result.append(tmp[i])
+		
 
-#use this method with above
-def countOccurenceLetters(word, possibleLetters):
-	return len(set(word).intersection(set(possibleLetters)))
-
+	#return a random one of these guesses
+	return result[random.randint(0, len(result)-1)]
 
 
 def makeguess(wordlist, guesses=[], feedback=[]):
@@ -275,7 +319,8 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 
 	#if we are only missing one letter and have plenty of options and at least 2 guesses left
 	#find a word that uses all or all-1 of the possible letters and use that so the next guess has much more information
-	if(len(guesses) <= 4 and len(guessList) > 2):
+	if(len(guesses) <= 4):
+		#if there is only 1 letter we don't know
 		if(correctWord.count("") == 1):
 			print(guessList)
 			#only have 1 letter unsolved
@@ -290,11 +335,8 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 			for i in guessList:
 				possibleLetters.append(i[idx])
 			#make a word using those letters
-			word = makeWord(wordlist, possibleLetters)
-			print(word)
-			if word != "":
-				return word
-			
+			#return that letter 
+			return findLastLetter(guessList, lettersInWord, lettersNotInWord)
 
 	# print("Returning random choice from guessList")
 	if(len(guessList) == 0):
