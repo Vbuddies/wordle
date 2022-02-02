@@ -320,9 +320,18 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 	if(len(guesses) <= 4):
 		#if there is only 1 letter we don't know
 		if(correctWord.count("") == 1):
+			print(guessList)
 			#only have 1 letter unsolved
 			#find which position it is
-			#then grab that position's letter for each possible guess
+			idx = 0
+			for i in range(5):
+				if(correctWord[i] == ""):
+					idx = i
+					break
+			possibleLetters = []
+			#loop through guessList grabbing all the letters
+			for i in guessList:
+				possibleLetters.append(i[idx])
 			#make a word using those letters
 			#return that letter 
 			return findLastLetter(guessList, lettersInWord, lettersNotInWord)
