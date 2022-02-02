@@ -158,7 +158,8 @@ def findLastLetter(wordList, lettersInWord, lettersNotInWord):
 		if(allLetters[i] not in lettersInWord and allLetters[i] not in lettersNotInWord):
 			unkownLetters.append(allLetters[i])
 
-
+	print(unkownLetters)
+	input("Continue")
 	# loop through words list
 	max = 0
 	tmp = []
@@ -198,7 +199,9 @@ def findLastLetter(wordList, lettersInWord, lettersNotInWord):
 		
 
 	#return a random one of these guesses
-	return result[random.randint(0, len(result)-1)]
+	if(len(result) == 0):
+		return ""
+	return random.choice(result)
 
 
 def makeguess(wordlist, guesses=[], feedback=[]):
@@ -321,22 +324,11 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 	#find a word that uses all or all-1 of the possible letters and use that so the next guess has much more information
 	if(len(guesses) <= 4):
 		#if there is only 1 letter we don't know
-		if(correctWord.count("") == 1):
+		if(correctWord.count("") == 1 and len(guessList) > 2):
 			print(guessList)
-			#only have 1 letter unsolved
-			#find which position it is
-			idx = 0
-			for i in range(5):
-				if(correctWord[i] == ""):
-					idx = i
-					break
-			possibleLetters = []
-			#loop through guessList grabbing all the letters
-			for i in guessList:
-				possibleLetters.append(i[idx])
-			#make a word using those letters
-			#return that letter 
-			return findLastLetter(guessList, lettersInWord, lettersNotInWord)
+			x = findLastLetter(guessList, lettersInWord, lettersNotInWord)
+			if x != "":
+				return x
 
 	# print("Returning random choice from guessList")
 	if(len(guessList) == 0):
