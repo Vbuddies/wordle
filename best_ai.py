@@ -231,7 +231,12 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 		The word chosen by the AI for the next guess.
 	"""
 	if(len(guesses) == 0):
-		# RAISE, RAILE, ARISE, ARIEL
+		# RAISE - 92%
+		# RAILE - 90.5%
+		# ARISE - 90.5%
+		# ARIEL - 89%
+		# ADIEU - 88%
+		return "RAISE"
 		return random.choice(["RAISE", "RAILE", "ARISE", "ARIEL"])
 		return random.choice(["ROATE", "REAIS", "SLATE", "AEGIS", "LARES", "RALES", "TARES", "NARES", "ARLES", "SIREN", "RAISE", "QUERY", "RENTS", "SNARE", "EARNS", "STOAE", "SANER", "CANOE", "TEARS", "STEAM", "ADIEU", "SOARE", "AROSE", "IRATE"])
 	
@@ -335,7 +340,8 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 			
 			g = findLastLetter(guessList, index, lettersInWord, correctWord)
 			print("guess should be" , g)
-			return g
+			if (g != ""):
+				return g
 
 	# print("Returning random choice from guessList")
 	if(len(guessList) == 0):
