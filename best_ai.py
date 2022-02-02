@@ -159,7 +159,8 @@ def findLastLetter(guessList, index, lettersInWord):
 	#add the letters we know are in the word to the list
 	letters += lettersInWord.keys()
 
-
+	print(unkownLetters)
+	input("Continue")
 	# loop through words list
 	max = 0
 	tmp = []
@@ -200,7 +201,9 @@ def findLastLetter(guessList, index, lettersInWord):
 	
 
 	#return a random one of these guesses
-	return result[random.randint(0, len(result)-1)]
+	if(len(result) == 0):
+		return ""
+	return random.choice(result)
 
 
 def makeguess(wordlist, guesses=[], feedback=[]):
@@ -228,6 +231,8 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 		The word chosen by the AI for the next guess.
 	"""
 	if(len(guesses) == 0):
+		# RAISE, RAILE, ARISE, ARIEL
+		return random.choice(["RAISE", "RAILE", "ARISE", "ARIEL"])
 		return random.choice(["ROATE", "REAIS", "SLATE", "AEGIS", "LARES", "RALES", "TARES", "NARES", "ARLES", "SIREN", "RAISE", "QUERY", "RENTS", "SNARE", "EARNS", "STOAE", "SANER", "CANOE", "TEARS", "STEAM", "ADIEU", "SOARE", "AROSE", "IRATE"])
 	
 	correctWord=["", "", "", "", ""]
