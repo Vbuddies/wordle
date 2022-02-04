@@ -241,15 +241,6 @@ def findLastLetter(guessList, index, lettersInWord, correctWord):
 	# print("words with most unique chars at front" , tmp)
 	return tmp[0]
 
-def orderGuessList(guessList):
-	#order the guess list with the best words first, and the worst words last
-
-	#repeated letters, and words with q, v, x, z should go towards the end
-	
-
-	#return the ordered guessList
-	return guessList
-
 
 def makeguess(wordlist, guesses=[], feedback=[]):
 	"""Guess a word from the available wordlist, (optionally) using feedback 
@@ -395,7 +386,6 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 
 	#reorder the list based on ranking of best words to choose
 	#place double letters and words with q, x, v, z at the end
-	guessList = orderGuessList(guessList) #TODO: complete this function
 
 
 	return random.choice(guessList)
