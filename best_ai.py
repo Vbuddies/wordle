@@ -146,6 +146,31 @@ def removeWrongPositionWords(guessList, positions):
 	return list(set(guessList) - set(tmp))
 
 
+def moveRepeatedLetterWordsBack(words):
+
+	wordsToNumRepeats = {}
+	#loop through words
+	for i in range(len(words)):
+		word = words[i]
+		#find number of unique letters
+		uniqueLets = set(word)
+		#map the string to its number of unique letters
+		wordsToNumRepeats[word] = len(uniqueLets) 
+
+	#sort dictionary by value
+	s = sorted(wordsToNumRepeats.items(), key = lambda kv: kv[1])
+
+	#convert keys to list
+	sortedDict = dict(s)
+	words = list(sortedDict.keys())
+
+	#reverse list so now words with most unique letter are in front
+	words.reverse()
+
+	return words
+	
+	
+
 #method to help us find the last letter when all others are known and our number of guesses
 # is <= 4
 def findLastLetter(guessList, index, lettersInWord, correctWord):
@@ -153,16 +178,18 @@ def findLastLetter(guessList, index, lettersInWord, correctWord):
 	wordList = utils.readwords("allwords5.txt")
 	#add to letters list the possible letters from that position in guess list and of letters in word
 	for i in range(len(guessList)):
-		if(guessList[i][index] not in letters):
+		if(guessList[i][index]):
 			letters.append(guessList[i][index])
 
 	#to remove duplicates
 	letters = list(set(letters))
+	
 
 	#if one of the possible letters is already in the correct word list then remove that letter
-	for i in letters:
-		if(i in correctWord):
-			letters.remove(i)
+	# for i in letters:
+	# 	if(i in correctWord):
+	# 		letters.remove(i)
+
 	# loop through words list
 	max = 0
 	tmp = []
@@ -184,6 +211,8 @@ def findLastLetter(guessList, index, lettersInWord, correctWord):
 			else:
 				max = current
 				tmp.append(word)
+
+
 	#remove words that have duplicate letters
 	for i in range(0,len(tmp)):
 		word = tmp[i]
@@ -193,17 +222,24 @@ def findLastLetter(guessList, index, lettersInWord, correctWord):
 				tmp[i] = ""
 				break
 	
+	# print(tmp)
+	tmp = moveRepeatedLetterWordsBack(tmp)
+	#print("words with most unique chars at front" , tmp)
+
+
 	#add all words with all unique letters to result list
-	result = []
-	for i in range(len(tmp)):
-		if(tmp[i] != ""):
-			result.append(tmp[i])
-		
+	# result = []
+	# for i in range(len(tmp)):
+	# 	if(tmp[i] != ""):
+	# 		result.append(tmp[i])
 	
-	#return a random one of these guesses
-	if(len(result) == 0):
-		return ""
-	return random.choice(result)
+	# print("possible words to be return", result)
+	
+	# #return a random one of these guesses
+	# if(len(result) == 0):
+	# 	return ""
+	# print("words with most unique chars at front" , tmp)
+	return tmp[0]
 
 def orderGuessList(guessList):
 	#order the guess list with the best words first, and the worst words last
@@ -348,6 +384,7 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 					index = i
 			
 			g = findLastLetter(guessList, index, lettersInWord, correctWord)
+			
 			print("guess should be" , g)
 			if (g != ""):
 				return g
@@ -359,6 +396,7 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 	#reorder the list based on ranking of best words to choose
 	#place double letters and words with q, x, v, z at the end
 	guessList = orderGuessList(guessList) #TODO: complete this function
+
 
 	return random.choice(guessList)
 
