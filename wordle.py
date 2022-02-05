@@ -67,6 +67,7 @@ def main(args):
     else:  # ai player
         for i in range(args.n):
             secret = random.choice(secretwordlist)  # random selection of the secret word
+            secret = "SPRAY"
             outcome = watch(secret, wordlist, ai, delay)
 
             # Update statistics file
