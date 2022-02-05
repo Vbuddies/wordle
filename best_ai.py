@@ -176,21 +176,27 @@ def moveRepeatedLetterWordsBack(words):
 def findLastLetter(guessList, index, lettersInWord, correctWord):
 	letters = []
 	wordList = utils.readwords("allwords5.txt")
-	#add to letters list the possible letters from that position in guess list and of letters in word
+
+	#add to letters list the possible letters from that unknown position in guess list 
 	for i in range(len(guessList)):
-		if(guessList[i][index]):
-			letters.append(guessList[i][index])
+		letters.append(guessList[i][index])
+
+	
+	#remove letters that we already know are in the word. 
+	inWord = list(lettersInWord.keys())
+	for i in range(len(lettersInWord)):
+		if(inWord[i] in letters):
+			letters.remove(inWord[i])
+
 
 	#to remove duplicates
 	letters = list(set(letters))
-	
+	#print("possible letters are ", letters)
 
-	#if one of the possible letters is already in the correct word list then remove that letter
-	# for i in letters:
-	# 	if(i in correctWord):
-	# 		letters.remove(i)
 
-	# loop through words list
+
+	# loop through words list to find which words have the most letters
+	#in our list of possible letters created above
 	max = 0
 	tmp = []
 	for i in range(len(wordList)):
@@ -211,34 +217,13 @@ def findLastLetter(guessList, index, lettersInWord, correctWord):
 			else:
 				max = current
 				tmp.append(word)
-
-
-	#remove words that have duplicate letters
-	for i in range(0,len(tmp)):
-		word = tmp[i]
-		#set the index of that word to be an empty string
-		for j in range(len(word)):
-			if(word.count(word[j]) > 1):
-				tmp[i] = ""
-				break
 	
-	# print(tmp)
+
+	#move possible guesses with most unique characters to front of list 
 	tmp = moveRepeatedLetterWordsBack(tmp)
-	#print("words with most unique chars at front" , tmp)
+	#print(tmp)
 
-
-	#add all words with all unique letters to result list
-	# result = []
-	# for i in range(len(tmp)):
-	# 	if(tmp[i] != ""):
-	# 		result.append(tmp[i])
-	
-	# print("possible words to be return", result)
-	
-	# #return a random one of these guesses
-	# if(len(result) == 0):
-	# 	return ""
-	# print("words with most unique chars at front" , tmp)
+	# we are now returning a guess that has the most letters that could possibly be the last letter
 	return tmp[0]
 
 

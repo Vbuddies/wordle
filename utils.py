@@ -5,10 +5,32 @@
 # Inspired by: https://www.powerlanguage.co.uk/wordle/
 
 from colorama import Fore
+from datetime import datetime
 import os
 import pdb
 from pynput import keyboard
 import subprocess
+
+
+def getdailysecret():
+    """Find the official word of the day using an encrypted list of secret words."""
+    # Read words directly from file
+    f = open('dailysecret.txt', 'r')
+    key = int(f.readline())  # the first line is the key to a circular Caesar cipher
+    words = f.read().upper().split('\n')  # make list of encrypted words
+    f.close()
+
+    # Decrypt word for today
+    jan1 = datetime.strptime('2022-01-01', '%Y-%m-%d')
+    index = 196 + (datetime.today() - jan1).days  # 196 is the index of the word for January 1, 2022
+    secret = ''
+    for letter in words[index]:
+        shift = (ord(letter) - key)
+        if shift < ord('A'):
+            shift += 26
+        secret += chr(shift)
+    
+    return secret
 
 
 def getfeedback(guess, secret):
@@ -160,24 +182,35 @@ def test():
 
 def updatestats(outcome, filename="stats.txt"):
     """Update statistics file based on the outcome of a game."""
+    # Force input filename to be a .txt file if extension not provided
+    if '.' not in filename:
+        filename = filename + '.txt'
+
     # Try to read data from file
     try:
         with open(filename, "r") as f:
             data = f.read().split('\n')  # make list of strings, one per stat line
     except IOError:
-        print(Fore.YELLOW + f'WARNING: Unable to track stats because {filename} does not exist.')
-        return 0
+        print(Fore.YELLOW + f'WARNING: Unable to track stats because {filename} does not exist. Creating file now.')
+        data = []
 
     # Load stats into dictionary
     stats = {}
     for line in data:
-        if len(line) == 0:
+        if len(line) == 0:  # take care of blank lines (often happens at end of file)
             continue
         stat, value = line.split('=')
         try:
             stats[stat] = int(value)
         except:  # need something special for lists
             stats[stat] = [int(i) for i in value.split(',')]
+    
+    # Validate dictionary
+    minstats = ['played', 'win percentage', 'current streak', 'max streak', 'guess distribution']
+    if set(minstats) > set(stats.keys()):
+        print(Fore.YELLOW + f'WARNING: {filename} does not contain the correct stats. Resetting file now.')
+        stats = dict.fromkeys(minstats, 0)
+        stats['guess distribution'] = [0] * 6
     
     # Modify stats based on outcome
     stats['played'] += 1

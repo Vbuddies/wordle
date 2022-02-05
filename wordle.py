@@ -5,12 +5,14 @@
 # Inspired by: https://www.powerlanguage.co.uk/wordle/
 
 import argparse
+import check_stats
 from colorama import init, Fore, Style
 import importlib
 import os
 import pdb
 import random
 import time
+from tqdm import tqdm
 import utils
 
 ROOT = os.path.dirname(os.path.realpath(__file__))
@@ -22,21 +24,36 @@ ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'  # valid letters to guess
 
 parser = argparse.ArgumentParser(description="Play Wordle in Python!")
 parser.add_argument('-ai', metavar='filename', type=str, help='name of AI file containing makeguess function')
-parser.add_argument('-n', metavar='numgames', type=int, help='number of games (AI only)', default=1)
-parser.add_argument('--fast', action='store_true', help='speed up the game (AI only)')
-parser.add_argument('--practice', action='store_false', help='do not track stats for this game')
+parser.add_argument('-n', metavar='numgames', type=int, help='number of games to play', default=1)
+parser.add_argument('--seed', metavar='s', type=int, help='seed for random number generation, defaults to system time')
+parser.add_argument('--stats', '-s', metavar='filename', type=str, help='name of stats file, defaults to stats.txt', default='stats.txt')
+parser.add_argument('--fast', action='store_true', help='flag to speed up the game (AI only)')
+parser.add_argument('--superfast', action='store_true', help='flag to eliminate any printed display during the game (AI only)')
+parser.add_argument('--playall', action='store_true', help="flag to play all possible secret words")
+parser.add_argument('--practice', action='store_true', help='flag to not track stats for this game')
+parser.add_argument('--daily', action='store_true', help="flag to play today's Wordle")
+parser.add_argument('--showfails', action='store_true', help='flag to display the secret words that were missed after all games are complete')
 parser.add_argument('--version', action='version', version=utils.getversion())
 
 
 def main(args):
     # Setup
     init(autoreset=True)  # required for colored text
-    random.seed()  # use current system time for randomness
+
+    if args.seed is None:
+        random.seed()  # use current system time for randomness
+    else:
+        random.seed(args.seed)  # use seed provided by user
+    
     if args.fast:
         delay = 0
     else:
         delay = 1
 
+    if args.playall and (args.daily or args.n > 1):
+        print(Fore.RED + f'ERROR: Invalid set of input arguments. Cannot set -n or --daily if using --playall.')
+        return 0
+    
     # Load AI player (if provided)
     ai = args.ai
     if ai is not None:
@@ -51,27 +68,50 @@ def main(args):
             print(Fore.RED + f"\n\tERROR: This AI player does not have a 'makeguess' function")
             return 0
         print("done")
+        print("Playing games...")
 
     # Read word lists from file
     wordlist = utils.readwords(ALLWORDS)
     secretwordlist = utils.readwords(SECRETWORDS)
 
     # Play the game
-    if ai is None:  # human player
-        secret = random.choice(secretwordlist)  # random selection of the secret word
-        outcome = play(secret, wordlist)
-            
-        # Update statistics file
-        if outcome != -1 and args.practice:  # only update if user didn't quit
-            utils.updatestats(outcome)
-    else:  # ai player
-        for i in range(args.n):
-            secret = random.choice(secretwordlist)  # random selection of the secret word
-            outcome = watch(secret, wordlist, ai, delay)
+    failures = []  # keep track of which secret words were missed
+    if args.playall:
+        args.n = len(secretwordlist)
+    for i in tqdm(range(args.n)) if args.superfast else range(args.n):
+        # Set the secret word
+        if args.daily:  # use the official word of the day
+            secret = utils.getdailysecret()
+        elif args.playall:  # iterate through the entire secret word list
+            secret = secretwordlist[i]
+        else:  # pick randomly
+            secret = random.choice(secretwordlist)
+        
+        # Who is playing?
+        if ai is None:  # human player
+            outcome = play(secret, wordlist)
+        else:  # AI player
+            outcome = watch(secret, wordlist, ai, delay, verbose=not args.superfast)
+        
+        # Was the word missed?
+        if outcome <= 0:
+            failures.append(secret)
 
-            # Update statistics file
-            if outcome != -1 and args.practice:  # only update if user didn't quit
-                utils.updatestats(outcome)
+        # Update statistics file
+        if outcome != -1 and not args.practice:  # only update if user didn't quit
+            utils.updatestats(outcome, filename=args.stats)
+
+    # Show updated stats if not practicing
+    if not args.practice:
+        check_stats.main(args.stats)
+
+    # Show failed words, if requested
+    if args.showfails and len(failures) > 0:
+        print("\nFAILED WORDS")
+        print("=" * 12)
+        failures.sort()
+        print(*failures, sep='\n')
+        print()
 
 
 def printtitle():
@@ -183,7 +223,7 @@ def play(secret, wordlist):
             return -1
 
 
-def watch(secret, wordlist, ai, delay=1):
+def watch(secret, wordlist, ai, delay=1, verbose=True):
     """Play Wordle using a secret word, a list of acceptable guesses, and an AI player.
 
     Parameters
@@ -197,8 +237,9 @@ def watch(secret, wordlist, ai, delay=1):
     delay : float, optional
         Number of seconds to wait between guesses. Default is 1.
     """
-    printtitle()
-    printword(remaining=ALPHABET)
+    if verbose:
+        printtitle()
+        printword(remaining=ALPHABET)
 
     guesses, feedback = [], []  # known information
     leftovers = ALPHABET  # remaining letters
@@ -208,12 +249,14 @@ def watch(secret, wordlist, ai, delay=1):
         guess = ai.makeguess(wordlist, guesses, feedback)
         guesses.append(guess)
         
-        printword(guesses[-1], remaining=leftovers)
-        time.sleep(delay)
+        if verbose:
+            printword(guesses[-1], remaining=leftovers)
+            time.sleep(delay)
 
         if guesses[-1] not in wordlist:
-            print(Fore.RED + "Not in word list", end='')
-            print('\nThanks for playing')
+            if verbose:
+                print(Fore.RED + "Not in word list", end='')
+                print('\nThanks for playing')
             return -1
         else:
             # Check guess
@@ -221,23 +264,27 @@ def watch(secret, wordlist, ai, delay=1):
             feedback.append(f)
 
             # Show feedback as colored text
-            printword(guesses[-1], feedback[-1], leftovers)
+            if verbose:
+                printword(guesses[-1], feedback[-1], leftovers)
 
             # Check endgame conditions
             if sum(f) == NUMLETTERS * 2:
                 gameover = True
-                msg = ["Genius", "Magnificent", "Impressive", "Splendid", "Great", "Phew"]
-                print(Fore.CYAN + '\n' + msg[len(guesses) - 1])
-                Style.RESET_ALL
+                if verbose:
+                    msg = ["Genius", "Magnificent", "Impressive", "Splendid", "Great", "Phew"]
+                    print(Fore.CYAN + '\n' + msg[len(guesses) - 1])
+                    Style.RESET_ALL
                 return len(guesses)
             elif len(guesses) == 6:
                 gameover = True
-                print(Fore.RED + f'\nGAME OVER: The correct word was {secret}')
-                Style.RESET_ALL
+                if verbose:
+                    print(Fore.RED + f'\nGAME OVER: The correct word was {secret}')
+                    Style.RESET_ALL
                 return 0
             else:
                 # Start new guess
-                print()
+                if verbose:
+                    print()
                 leftovers = utils.removeletters(leftovers, guesses[-1], feedback[-1])
 
 
