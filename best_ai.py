@@ -277,13 +277,13 @@ def findLast2Letters(guessList, correctWord):
 				tmp.append(word)
 
 
-	for i in range(0,len(tmp)):
-		word = tmp[i]
-		#set the index of that word to be an empty string
-		for j in range(len(word)):
-			if(word.count(word[j]) > 1):
-				tmp[i] = ""
-				break
+	# for i in range(0,len(tmp)):
+	# 	word = tmp[i]
+	# 	#set the index of that word to be an empty string
+	# 	for j in range(len(word)):
+	# 		if(word.count(word[j]) > 1):
+	# 			tmp[i] = ""
+	# 			break
 
 	tmp = moveRepeatedLetterWordsBack(tmp)
 
@@ -415,7 +415,7 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 			
 			g = findLastLetter(guessList, index, lettersInWord, correctWord)
 			
-			print("guess should be" , g)
+			#print("guess should be" , g)
 			if (g != ""):
 				return g
 
@@ -423,7 +423,7 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 		if(correctWord.count("") == 2 and len(guessList) > 2):
 			g = findLast2Letters(guessList, correctWord)
 
-			print("2nd guess should be " + g)
+			#print("2nd guess should be " + g)
 			if(g != ""):
 				return g
 
