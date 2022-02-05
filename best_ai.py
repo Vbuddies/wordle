@@ -239,7 +239,74 @@ def findLastLetter(guessList, index, lettersInWord, correctWord):
 	# if(len(result) == 0):
 	# 	return ""
 	# print("words with most unique chars at front" , tmp)
+	print(tmp)
 	return tmp[0]
+
+def findLast2Letters(guessList, correctWord):
+	'''Method to find all the possible letters that could fill the last 2 unknown letters'''
+
+	pos1 = 0
+	pos2 = 1
+
+	#first I need to get the 2 positions
+	for i in range(len(correctWord)):
+		if correctWord[i] == "":
+			#have first position that is empty
+			pos1 = i
+			break
+	for i in range(len(correctWord)-1, -1, -1):
+		if correctWord[i] == "":
+			pos2 = i
+			break
+	
+	#now that we have positions we need to get all the possible letter that can go in either of those positions
+	letters = []
+	for word in guessList:
+		letters.append(word[pos1])
+		letters.append(word[pos2])
+
+	#turn the letter list into a set to remove all duplicates
+	letters = list(set(letters))
+
+	#get total wordList
+	wordList = utils.readwords("allwords5.txt")
+
+	max = 0
+	tmp = []
+	for i in range(len(wordList)):
+		current = 0
+		word = wordList[i]
+
+		#count the number of unknown letters in each word
+		for j in range(len(word)):
+			if(word[j] in letters):
+				current += 1
+
+		#if its a new max add it to a list
+		if(current >= max):
+			if(current > max):
+				tmp = []
+				tmp.append(word)
+				max = current
+			else:
+				max = current
+				tmp.append(word)
+
+
+	for i in range(0,len(tmp)):
+		word = tmp[i]
+		#set the index of that word to be an empty string
+		for j in range(len(word)):
+			if(word.count(word[j]) > 1):
+				tmp[i] = ""
+				break
+
+	tmp = moveRepeatedLetterWordsBack(tmp)
+
+	return tmp[0]
+
+
+
 
 
 def makeguess(wordlist, guesses=[], feedback=[]):
@@ -348,20 +415,7 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 
 
 
-
-
-
-	#choose a word from the list of possible words
-	#go with random or a better method of picking a word
-
-	#perhaps if this is the second pick find a word with lots of consonants and few vowels that still has all the correct letters from the first guess
-	#should only do this for limited information, i.e. on the second guess
-
-	#added these lines for debugging
-	# input("Continue")
-
-	#TODO: for a simple AI we could just choose a random choice like the following, but we should probably make this smarter
-	
+	#MAKING GUESS	
 
 	#if we are only missing one letter and have plenty of options and at least 2 guesses left
 	#find a word that uses all or all-1 of the possible letters and use that so the next guess has much more information
@@ -373,11 +427,20 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 			for i in range(len(correctWord)):
 				if(correctWord[i] == ""):
 					index = i
+					break
 			
 			g = findLastLetter(guessList, index, lettersInWord, correctWord)
 			
 			print("guess should be" , g)
 			if (g != ""):
+				return g
+
+	if (len(guesses) <= 3):
+		if(correctWord.count("") == 2 and len(guessList) > 2):
+			g = findLast2Letters(guessList, correctWord)
+
+			print("2nd guess should be " + g)
+			if(g != ""):
 				return g
 
 	# print("Returning random choice from guessList")
