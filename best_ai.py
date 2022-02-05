@@ -224,6 +224,8 @@ def findLastLetter(guessList, index, lettersInWord, correctWord):
 	#print(tmp)
 
 	# we are now returning a guess that has the most letters that could possibly be the last letter
+	#sort the words
+	tmp = sortWords(tmp)
 	return tmp[0]
 
 def findLast2Letters(guessList, correctWord):
@@ -286,11 +288,168 @@ def findLast2Letters(guessList, correctWord):
 	# 			break
 
 	tmp = moveRepeatedLetterWordsBack(tmp)
+	#sort the words
+	# tmp = sortWords(tmp) #bizarre thing when both sorts are implemented on findlastletter methods
+	#the success percentage drops by 1 and the average tries goes up by .1-.2
 
 	return tmp[0]
 
 
+def sortWords(guessList):
+	'''to sort words by putting words with more frequent letters towards the front and words with double letters towards the rear'''
+	#for each word in the guessList gets it numerical value of how good of a guess it is
+	words = {word: wordValue(word) for word in guessList}
 
+	#now we have a dictionary of words mapping to each words own point value
+	#turn back into a list and then sort it based on those dictionary point values
+	# t = sorted(words.items(), key=lambda x: x[1], reverse=True)
+	sortedWords = [key for (key, value) in sorted(words.items(), key=lambda x:x[1], reverse=True)]
+
+	#return the new list
+	return sortedWords
+
+
+def wordValue(word):
+	points = 0
+	#make word a set to reduce chances of guessing
+	#because that is one less letter to add points to the word
+	tmp = set(word)
+
+	#give points for each letter in set
+	#based on numbers from doing a frequency analysis of all letters in the wordlist
+	#we get the total occurence of each letter divide it by 26 and then round to 2 decimal places
+	pointValues = {
+		"A": 230.38,
+		"B": 62.57,
+		"C": 78.00,
+		"D": 94.35,
+		"E": 256.23,
+		"F": 48.47,
+		"G": 63.23,
+		"H": 67.69,
+		"I": 144.58,
+		"J": 11.19,
+		"K": 57.88,
+		"L": 129.65,
+		"M": 76.00,
+		"N": 113.54,
+		"O": 170.69,
+		"P": 77.65,
+		"Q": 4.31,
+		"R": 159.92,
+		"S": 256.35,
+		"T": 126.73,
+		"U": 96.58,
+		"V": 26.69,
+		"W": 39.96,
+		"X": 11.08,
+		"Y": 79.77,
+		"Z": 16.69
+	}
+	for letter in tmp:
+		points += pointValues[letter]
+
+	#loop through word giving bonus points for specific letters in specific places
+	for i in range(len(word)):
+		if i == 0:
+			#first letter
+			#points added could change based on experimentation
+			if i == "S" or i == "s":
+				points += 50
+			if i == "C" or i == "C":
+				points += 15
+			if i == "B" or i == "b":
+				points += 15
+			if i == "T" or i == "t":
+				points += 15
+			if i == "P" or i == "p":
+				points += 15
+			if i == "A" or i == "a":
+				points += 15
+			if i == "F" or i == "f":
+				points += 15
+		elif i == 1:
+			#second letter
+			if i == "A" or i == "a":
+				points += 15
+			if i == "O" or i == "o":
+				points += 15
+			if i == "R" or i == "r":
+				points += 15
+			if i == "E" or i == "e":
+				points += 15
+			if i == "I" or i == "i":
+				points += 15
+			if i == "L" or i == "l":
+				points += 15
+			if i == "U" or i == "u":
+				points += 15
+			if i == "H" or i == "h":
+				points += 15
+		elif i == 2:
+			#third letter
+			if i == "A" or i == "a":
+				points += 15
+			if i == "I" or i == "i":
+				points += 15
+			if i == "O" or i == "o":
+				points += 15
+			if i == "E" or i == "e":
+				points += 15
+			if i == "U" or i == "u":
+				points += 15
+			if i == "R" or i == "r":
+				points += 15
+			if i == "N" or i == "n":
+				points += 15
+		elif i == 3:
+			#fourth letter
+			if i == "E" or i == "e":
+				points += 50
+			if i == "N" or i == "n":
+				points += 15
+			if i == "S" or i == "s":
+				points += 15
+			if i == "A" or i == "a":
+				points += 15
+			if i == "L" or i == "l":
+				points += 15
+			if i == "I" or i == "i":
+				points += 15
+			if i == "R" or i == "r":
+				points += 15
+			if i == "C" or i == "c":
+				points += 15
+			if i == "T" or i == "t":
+				points += 15
+			if i == "O" or i == "o":
+				points += 15
+		else:
+			#fifth letter
+			if i == "E" or i == "e":
+				points += 15
+			if i == "Y" or i == "y":
+				points += 15
+			if i == "T" or i == "t":
+				points += 15
+			if i == "R" or i == "r":
+				points += 15
+			if i == "L" or i == "l":
+				points += 15
+			if i == "H" or i == "h":
+				points += 15
+			if i == "N" or i == "n":
+				points += 15
+			if i == "D" or i == "d":
+				points += 15
+
+	#reduce points for a word that ends in S, its just not very likely
+	if word[-1] == "S" or word[-1] == "s":
+		points -= 100 #subject to change based on experimentation
+
+
+	#return points 
+	return points
 
 
 def makeguess(wordlist, guesses=[], feedback=[]):
@@ -318,11 +477,8 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 		The word chosen by the AI for the next guess.
 	"""
 	if(len(guesses) == 0):
-		# RAISE - 92%
-		# RAILE - 90.5%
-		# ARISE - 90.5%
-		# ARIEL - 89%
-		# ADIEU - 88%
+		return "TRACE"
+		#here you can see all the previous ways we were starting our first guess
 		return "RAISE"
 		return random.choice(["RAISE", "RAILE", "ARISE", "ARIEL"])
 		return random.choice(["ROATE", "REAIS", "SLATE", "AEGIS", "LARES", "RALES", "TARES", "NARES", "ARLES", "SIREN", "RAISE", "QUERY", "RENTS", "SNARE", "EARNS", "STOAE", "SANER", "CANOE", "TEARS", "STEAM", "ADIEU", "SOARE", "AROSE", "IRATE"])
@@ -433,8 +589,9 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 
 	#reorder the list based on ranking of best words to choose
 	#place double letters and words with q, x, v, z at the end
-
-
+	guessList = sortWords(guessList)
+	return guessList[0]
+	#hahaha, this old method...it was good while it lasted
 	return random.choice(guessList)
 
 
