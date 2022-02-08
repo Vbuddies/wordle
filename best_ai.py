@@ -105,22 +105,29 @@ def setPositions(feedback, guesses, correctWord, positions, lettersInWord, lette
     for i in range(len(feedback)):
         guess = guesses[i]
         feed = feedback[i]
+
         for i in range(len(guess)):
+            # p o l l s
             if feed[i] == 0:
-                # wrong letter
-                # need to check if the letter appears twice, if it does then i can't directly do this, otherwise I can
-                flag = True
+                # positions[guess[i]][i] = 0
+                allGrey = True
                 for j in range(len(guess)):
-                    if j != i and guess[j] == guess[i]:
-                        positions[guess[i]][i] = 0
-                        flag = False
-                if(flag):
+                    if(j != i and guess[j] == guess[i]):
+                        # if another instance of the letter that was grey is in the word, but it isn't grey
+                        if(feed[j] != 0):
+                            allGrey = False
+                            break
+
+                if(allGrey):
                     lettersNotInWord.append(guess[i])
                     positions[guess[i]][0] = 0
                     positions[guess[i]][1] = 0
                     positions[guess[i]][2] = 0
                     positions[guess[i]][3] = 0
                     positions[guess[i]][4] = 0
+                else:
+                    # other wise we know that letter isn't in JUST this position
+                    positions[guess[i]][i] = 0
             elif feed[i] == 1:
                 # right letter wrong position
                 lettersInWord[guess[i]] = 1
@@ -133,7 +140,7 @@ def setPositions(feedback, guesses, correctWord, positions, lettersInWord, lette
 
 
 # method to remove any words that have letters that are in the word but wrong position
-def removeWrongPositionWords(guessList, positions):
+def removeWrongPositionWords(guessList, positions, lettersInWord, lettersNotInWord):
     # loop through guess list
     tmp = []
     for i in range(len(guessList)):
@@ -141,6 +148,7 @@ def removeWrongPositionWords(guessList, positions):
         # loop through word and see if it has a letter in word, but in wrong position
         for l in range(len(word)):
             if(positions[word[l]][l] == 0):
+				#get rid of guesses that have letter that we know doesn't go at that position
                 tmp.append(guessList[i])
                 continue
 
@@ -189,7 +197,7 @@ def findLastLetter(guessList, index, lettersInWord, correctWord, guesses):
 
     # to remove duplicates
     letters = list(set(letters))
-    #print("possible letters are ", letters)
+    # print("possible letters are ", letters)
 
     # loop through words list to find which words have the most letters
     # in our list of possible letters created above
@@ -220,8 +228,6 @@ def findLastLetter(guessList, index, lettersInWord, correctWord, guesses):
 
     # we are now returning a guess that has the most letters that could possibly be the last letter
     # sort the words
-    #tmp = sortWords(tmp)
-    print(tmp)
     for i in range(len(tmp)):
         if(tmp[i] not in guesses):
             return tmp[i]
@@ -459,22 +465,22 @@ def makeguess(wordlist, guesses=[], feedback=[]):
     Parameters
     ----------
     wordlist : list of str
-            A list of the valid word choices. The output must come from this list.
+                                    A list of the valid word choices. The output must come from this list.
     guesses : list of str
-            A list of the previously guessed words, in the order they were made, 
-            e.g. guesses[0] = first guess, guesses[1] = second guess. The length 
-            of the list equals the number of guesses made so far. An empty list 
-            (default) implies no guesses have been made.
+                                    A list of the previously guessed words, in the order they were made, 
+                                    e.g. guesses[0] = first guess, guesses[1] = second guess. The length 
+                                    of the list equals the number of guesses made so far. An empty list 
+                                    (default) implies no guesses have been made.
     feedback : list of lists of int
-            A list comprising one list per word guess and one integer per letter 
-            in that word, to indicate if the letter is correct (2), almost 
-            correct (1), or incorrect (0). An empty list (default) implies no 
-            guesses have been made.
+                                    A list comprising one list per word guess and one integer per letter 
+                                    in that word, to indicate if the letter is correct (2), almost 
+                                    correct (1), or incorrect (0). An empty list (default) implies no 
+                                    guesses have been made.
 
     Output
     ------
     word : str
-            The word chosen by the AI for the next guess.
+                                    The word chosen by the AI for the next guess.
     """
 
     correctWord = ["", "", "", "", ""]
@@ -513,26 +519,30 @@ def makeguess(wordlist, guesses=[], feedback=[]):
     # python wordle.py -ai best_ai.py --superfast --playall
 
     if(len(guesses) == 0):
+        # return "TRACE"
         return "ADIEU"
-        return "TRACE"
         # here you can see all the previous ways we were starting our first guess
-        return "RAISE"
+        # return "RAISE"
         return random.choice(["RAISE", "RAILE", "ARISE", "ARIEL"])
-        return random.choice(["ROATE", "REAIS", "SLATE", "AEGIS", "LARES", "RALES", "TARES", "NARES", "ARLES", "SIREN", "RAISE", "QUERY", "RENTS", "SNARE", "EARNS", "STOAE", "SANER", "CANOE", "TEARS", "STEAM", "ADIEU", "SOARE", "AROSE", "IRATE"])
+        # return random.choice(["ROATE", "REAIS", "SLATE", "AEGIS", "LARES", "RALES", "TARES", "NARES", "ARLES", "SIREN", "RAISE", "QUERY", "RENTS", "SNARE", "EARNS", "STOAE", "SANER", "CANOE", "TEARS", "STEAM", "ADIEU", "SOARE", "AROSE", "IRATE"])
 
     if(len(guesses) == 1):
+        # with trace or raise, use SHOUT NOULS
         return "SNORT"
 
-    # set the possible positions and lettersNotInWord
+    # # set the possible positions and lettersNotInWord
     setPositions(feedback, guesses, correctWord, positions,
                  lettersInWord, lettersNotInWord)
 
-    # this could be 								2
+    # # this could be 								3
     if(len(guesses) == 2 and len(lettersInWord) < 3):
-        return "AMPLY"
+        return "PALMY"
+    # if(len(guesses) == 2):
+    #     return "PALMY"
 
     # get an initial guess list using letters we know are correct
     guessList = createGuessList(correctWord)
+    # print("guess list up here" , guessList)
 
     if(len(guessList) == 0):
         # have no correct letters, so just add all words and the filters will remove the letters we know don't work
@@ -558,18 +568,19 @@ def makeguess(wordlist, guesses=[], feedback=[]):
         if(j != ""):
             guessList = removeWordsWithoutLetter(guessList, j)
 
-    # remove words where letters don't correspond with positions dictionary
-    guessList = removeWrongPositionWords(guessList, positions)
 
-    # MAKING GUESS
-    # python wordle.py -ai best_ai.py --fast -n 500
+    # remove words where letters don't correspond with positions dictionary
+    # THIS WAS CAUSING CRASH
+    guessList = removeWrongPositionWords(
+        guessList, positions, lettersInWord, lettersNotInWord)
+
+
 
     # if we are only missing one letter and have plenty of options and at least 2 guesses left
     # find a word that uses all or all-1 of the possible letters and use that so the next guess has much more information
     if(len(guesses) <= 4):
         # if there is only 1 letter we don't know
         if(correctWord.count("") == 1 and len(guessList) > 2):
-            # print(guessList)
             index = 0
             for i in range(len(correctWord)):
                 if(correctWord[i] == ""):
@@ -583,15 +594,17 @@ def makeguess(wordlist, guesses=[], feedback=[]):
             if (g != ""):
                 return g
 
-    # #python wordle.py -ai best_ai.py --fast -n 500
-    # if (len(guesses) <= 3):
-    # 	if(correctWord.count("") == 2 and len(guessList) > 2):
-    # 		g = findLast2Letters(guessList, correctWord)
+    # if we are down to 2 uknown letters and we have many reamining guess
+    if (len(guesses) <= 3):
+        if(correctWord.count("") == 2 and len(guessList) > 2):
+			#call this method to make a guess that will try to give us the last two letters
+            g = findLast2Letters(guessList, correctWord)
 
-    # 		print("2nd guess should be " + g)
-    # 		if(g != ""):
-    # 			return g
+            if(g != ""):
+                return g
 
+	# if(guesses[len(guesses)] )
+	
     # print("Returning random choice from guessList")
     if(len(guessList) == 0):
         return input("guessList Empty Select Value to pass: ")
@@ -600,10 +613,6 @@ def makeguess(wordlist, guesses=[], feedback=[]):
     # place double letters and words with q, x, v, z at the end
     guessList = sortWords(guessList)
     return guessList[0]
-
-    # hahaha, this old method...it was good while it lasted
-    return random.choice(guessList)
-
 
 if __name__ == "__main__":
     wordlist = utils.readwords("allwords5.txt")
